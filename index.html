@@ -1,209 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>StrikerZone Football Shop</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    * { box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { margin: 0; padding: 0; background: #f9f9f9; color: #333; }
-    header { background: #1a73e8; color: white; padding: 1rem; text-align: center; }
-    main { padding: 1rem; max-width: 800px; margin: auto; }
-    .section { margin-bottom: 2rem; background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    h2 { color: #1a73e8; }
-    input, button, select { padding: 0.5rem; margin: 0.5rem 0; width: 100%; border: 1px solid #ccc; border-radius: 4px; }
-    button { background: #1a73e8; color: white; border: none; cursor: pointer; }
-    button:hover { background: #155ab6; }
-    .admin-panel, .wishlist, .shop, .inventory, .promo, .wallet { display: none; }
-    .product { border: 1px solid #ddd; padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px; }
-    .logout { float: right; background: #ff4444; }
+    body { font-family: 'Segoe UI', sans-serif; margin:0; background:#fafafa; color:#333; }
+    header { background:#009688; padding:20px; color:white; text-align:center; font-size:1.8em; }
+    main { max-width:800px; margin:20px auto; padding:0 20px; }
+    .section { margin-bottom:30px; background:white; padding:20px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    button { padding:8px 14px; border:none; background:#009688; color:white; border-radius:4px; cursor:pointer; }
+    button:hover { background:#00796b; }
+    input { padding:8px; margin:5px 0; width:100%; border:1px solid #ccc; border-radius:4px; }
+    .product, .inventory-item, .wishlist-item, .cart-item { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .out { opacity:0.5; }
+    nav button { margin-right:10px; }
   </style>
 </head>
 <body>
-<header>
-  <h1>StrikerZone Football Shop</h1>
-  <button id="logoutBtn" class="logout">Logout</button>
-</header>
+
+<header>⚽ StrikerZone Football Shop</header>
+
 <main>
-  <!-- Login/Signup -->
-  <div class="section" id="auth">
-    <h2>Login / Sign Up</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="signup()">Sign Up</button>
+  <div id="auth-section" class="section">
+    <h2>Login or Sign Up</h2>
+    <input id="uName" placeholder="Username" /><br/>
+    <input id="uPass" type="password" placeholder="Password" /><br/>
     <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+    <p id="authMsg" style="color:red;"></p>
   </div>
 
-  <!-- Wallet -->
-  <div class="section wallet" id="walletSection">
-    <h2>Wallet: ₹<span id="wallet">0</span></h2>
-  </div>
+  <div id="user-section" style="display:none;">
+    <nav>
+      <button onclick="show('shop')">Shop</button>
+      <button onclick="show('inventory')">Inventory</button>
+      <button onclick="show('wishlist')">Wishlist</button>
+      <button onclick="show('promo')">Promo</button>
+      <button onclick="logout()">Logout</button>
+    </nav>
 
-  <!-- Promo Codes -->
-  <div class="section promo" id="promoSection">
-    <h2>Enter Promo Code</h2>
-    <input type="text" id="promoInput" placeholder="Enter promo code">
-    <button onclick="redeemPromo()">Redeem</button>
-  </div>
-
-  <!-- Shop -->
-  <div class="section shop" id="shopSection">
-    <h2>Shop Products</h2>
-    <div class="product">
-      <strong>Football Boots - ₹300</strong>
-      <button onclick="buy('Football Boots', 300)">Buy</button>
-      <button onclick="addToWishlist('Football Boots')">Wishlist</button>
+    <div id="shop" class="section">
+      <h2>Available Products</h2>
+      <div id="products"></div>
     </div>
-    <div class="product">
-      <strong>Goalkeeper Gloves - ₹200</strong>
-      <button onclick="buy('Goalkeeper Gloves', 200)">Buy</button>
-      <button onclick="addToWishlist('Goalkeeper Gloves')">Wishlist</button>
+
+    <div id="inventory" class="section" style="display:none;">
+      <h2>Your Inventory</h2>
+      <div id="invList"></div>
     </div>
-  </div>
 
-  <!-- Inventory -->
-  <div class="section inventory" id="inventorySection">
-    <h2>Inventory</h2>
-    <ul id="inventoryList"></ul>
-  </div>
+    <div id="wishlist" class="section" style="display:none;">
+      <h2>Your Wishlist</h2>
+      <div id="wishList"></div>
+    </div>
 
-  <!-- Wishlist -->
-  <div class="section wishlist" id="wishlistSection">
-    <h2>Wishlist</h2>
-    <ul id="wishlistList"></ul>
-  </div>
+    <div id="promo" class="section" style="display:none;">
+      <h2>Promo Code</h2>
+      <input id="promoCode" placeholder="Enter promo code" /><button onclick="redeem()">Redeem</button>
+      <p id="promoMsg"></p>
+    </div>
 
-  <!-- Admin Panel -->
-  <div class="section admin-panel" id="adminPanel">
-    <h2>Admin Panel</h2>
-    <p>View all registered users coming soon!</p>
+    <div id="adminPanel" class="section" style="display:none;">
+      <h2>Admin Panel</h2>
+      <h3>Edit Users</h3>
+      <div id="adminUsers"></div>
+    </div>
   </div>
 </main>
 
+<script>
+  // Data storage
+  let users = JSON.parse(localStorage.getItem('SZ_users')||'{}');
+  let current = null;
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const productsList = [
+    'CR7 Jersey','Adidas Ball','Soccer Shoes','Goalkeeper Gloves',
+    'Training Kit','Football Pump','Ultra Shin Guards','CAPTAIN Armband'
+  ];
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDZNvRZ5wadbC4buX3RtcJnPgfTC_JwGNE",
-    authDomain: "strikerzone-7.firebaseapp.com",
-    projectId: "strikerzone-7",
-    storageBucket: "strikerzone-7.firebasestorage.app",
-    messagingSenderId: "637069505157",
-    appId: "1:637069505157:web:96f13b53e8bc974c886fec",
-    measurementId: "G-XZ6RXTW97Q"
-  };
+  const promoCodes = { CR700:700, GOAL1000:1000, FCB300:300 };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  let stock = {}, interval;
 
-  const walletEl = document.getElementById("wallet");
-  const inventoryList = document.getElementById("inventoryList");
-  const wishlistList = document.getElementById("wishlistList");
-  const authDiv = document.getElementById("auth");
-  const sections = ["walletSection", "shopSection", "promoSection", "inventorySection", "wishlistSection", "adminPanel"];
+  // Show nav
+  function show(sec){
+    ['shop','inventory','wishlist','promo','adminPanel'].forEach(id=>{
+      document.getElementById(id).style.display = (id === sec)?'block':'none';
+    });
+  }
 
-  let currentUser = null;
+  function signup(){
+    const u = uName.value.trim(), p = uPass.value;
+    if(!u||!p) return authMsg.textContent='Enter both fields';
+    if(users[u]) return authMsg.textContent='User exists';
+    users[u] = { pass:p, wallet:10000, inventory:[], wishlist:[] };
+    localStorage.setItem('SZ_users',JSON.stringify(users));
+    authMsg.textContent='Account created – now login.';
+  }
 
-  document.getElementById("logoutBtn").onclick = () => {
-    localStorage.clear();
-    location.reload();
-  };
+  function login(){
+    const u=uName.value.trim(), p=uPass.value;
+    if(u==='atiksh'&&p==='atiksh7'){ // admin
+      current='atiksh'; document.getElementById('auth-section').style.display='none';
+      document.getElementById('user-section').style.display='block';
+      document.getElementById('adminPanel').style.display='block';
+      renderAdmin(); return;
+    }
+    if(users[u] && users[u].pass===p){
+      current=u;
+      document.getElementById('auth-section').style.display='none';
+      document.getElementById('user-sectional')?.remove();
+      document.getElementById('user-section').style.display='block';
+      startShop();
+    } else authMsg.textContent='Invalid credentials';
+  }
 
-  async function signup() {
-    const username = document.getElementById("username").value;
-    const pass = document.getElementById("password").value;
-    const docRef = doc(db, "users", username);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      alert("User already exists!");
-    } else {
-      await setDoc(docRef, { password: pass, wallet: 0, inventory: [], wishlist: [] });
-      alert("Signup successful! Please log in.");
+  function logout(){ location.reload(); }
+
+  function startShop(){
+    resetStock();
+    interval = setInterval(resetStock,60000);
+    renderProducts();
+    renderInv();
+    renderWish();
+    updateWalletHeader();
+  }
+
+  function updateWalletHeader(){
+    document.querySelector('header').textContent = `⚽ StrikerZone – ${current} | ₹${users[current].wallet}`;
+  }
+
+  function resetStock(){
+    productsList.forEach(p=>{
+      stock[p] = Math.random()<0.6? Math.floor(Math.random()*500+300):0;
+    });
+    renderProducts();
+  }
+
+  function renderProducts(){
+    const c = document.getElementById('products');
+    c.innerHTML='';
+    productsList.forEach(p=>{
+      const price = stock[p];
+      const div = document.createElement('div');
+      div.className = 'product' + (price===0?' out':'');
+      div.innerHTML = `<b>${p}</b> - ₹${price||'Out of stock'}<br>` +
+        (price?`<button onclick="buy('${p}',${price})">Buy</button>`:`<button disabled>Out</button>`) +
+        `<button onclick="wish('${p}')">Wishlist</button>`;
+      c.appendChild(div);
+    });
+  }
+
+  function buy(item, price){
+    if(users[current].wallet<price){ return alert('Insufficient cash'); }
+    users[current].wallet -= price;
+    users[current].inventory.push(item);
+    saveUpdate();
+    renderInv(); updateWalletHeader();
+    alert('Purchased ' + item);
+  }
+
+  function wish(item){
+    if(!users[current].wishlist.includes(item)){
+      users[current].wishlist.push(item);
+      saveUpdate(); renderWish();
+      alert('Added to wishlist');
     }
   }
 
-  async function login() {
-    const username = document.getElementById("username").value;
-    const pass = document.getElementById("password").value;
-    const docRef = doc(db, "users", username);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists() && docSnap.data().password === pass) {
-      currentUser = username;
-      localStorage.setItem("user", username);
-      loadUserData(docSnap.data());
-      if (username === "atiksh" && pass === "atiksh7") show("adminPanel");
-    } else {
-      alert("Invalid credentials.");
+  function renderInv(){
+    const c = document.getElementById('invList');
+    c.innerHTML = '';
+    users[current].inventory.forEach(i=>{
+      const el = document.createElement('div');
+      el.className='inventory-item';
+      el.innerHTML = `${i} <button onclick="sell('${i}')">Sell ₹${Math.floor((stock[i]||0)*0.5)}</button>`;
+      c.appendChild(el);
+    });
+  }
+
+  function renderWish(){
+    const c = document.getElementById('wishList');
+    c.innerHTML = '';
+    users[current].wishlist.forEach(i=>{
+      const el = document.createElement('div');
+      el.className='wishlist-item';
+      el.innerHTML = i + ` <button onclick="removeWish('${i}')">Remove</button>`;
+      c.appendChild(el);
+    });
+  }
+
+  function sell(item){
+    users[current].inventory = users[current].inventory.filter(i=>i!==item);
+    const gain = Math.floor((stock[item]||0)*0.5);
+    users[current].wallet += gain;
+    saveUpdate(); renderInv(); updateWalletHeader();
+  }
+
+  function removeWish(item){
+    users[current].wishlist = users[current].wishlist.filter(i=>i!==item);
+    saveUpdate(); renderWish();
+  }
+
+  function redeem(){
+    const code=promoCode.value.trim().toUpperCase();
+    if(promoCodes[code]){
+      users[current].wallet += promoCodes[code];
+      delete promoCodes[code];
+      saveUpdate(); updateWalletHeader();
+      promoMsg.textContent='₹'+promoCodes[code]+' credited!';
+    } else promoMsg.textContent='Invalid/used code';
+    renderPromoMsg();
+  }
+
+  function renderPromoMsg(){
+    // leave inline code above
+  }
+
+  function saveUpdate(){
+    localStorage.setItem('SZ_users', JSON.stringify(users));
+  }
+
+  function renderAdmin(){
+    const div = document.getElementById('adminUsers');
+    div.innerHTML='';
+    for(let u in users){
+      const d = document.createElement('div');
+      d.style.border='1px solid #aaa'; d.style.padding='10px';
+      d.style.margin='10px 0';
+      d.innerHTML = `<b>${u}</b> – Wallet: <input type="number" value="${users[u].wallet}" onchange="setWallet('${u}',this.value)" /><br>
+      Inventory [${users[u].inventory.length}]: ${users[u].inventory.join(', ')}`;
+      div.appendChild(d);
     }
   }
 
-  async function loadUserData(data) {
-    authDiv.style.display = "none";
-    sections.forEach(id => show(id));
-    walletEl.textContent = data.wallet;
-    inventoryList.innerHTML = data.inventory.map(item => `<li>${item}</li>`).join("");
-    wishlistList.innerHTML = data.wishlist.map(item => `<li>${item}</li>`).join("");
+  function setWallet(user,val){
+    users[user].wallet = parseInt(val)||users[user].wallet;
+    saveUpdate();
+    updateWalletHeader();
   }
 
-  async function buy(item, cost) {
-    const userRef = doc(db, "users", currentUser);
-    const userDoc = await getDoc(userRef);
-    const data = userDoc.data();
-    if (data.wallet >= cost) {
-      data.wallet -= cost;
-      data.inventory.push(item);
-      await updateDoc(userRef, data);
-      loadUserData(data);
-      alert("Purchased!");
-    } else {
-      alert("Not enough balance.");
-    }
-  }
-
-  async function redeemPromo() {
-    const code = document.getElementById("promoInput").value.trim().toUpperCase();
-    const promos = { "CR7GOAT": 100, "FIRE50": 50, "BIGBONUS": 500 };
-    if (!promos[code]) return alert("Invalid promo code.");
-    const userRef = doc(db, "users", currentUser);
-    const userDoc = await getDoc(userRef);
-    const data = userDoc.data();
-    data.wallet += promos[code];
-    await updateDoc(userRef, data);
-    loadUserData(data);
-    alert(`Promo applied! +₹${promos[code]}`);
-  }
-
-  async function addToWishlist(item) {
-    const userRef = doc(db, "users", currentUser);
-    const userDoc = await getDoc(userRef);
-    const data = userDoc.data();
-    if (!data.wishlist.includes(item)) {
-      data.wishlist.push(item);
-      await updateDoc(userRef, data);
-      loadUserData(data);
-    } else {
-      alert("Already in wishlist.");
-    }
-  }
-
-  function show(id) {
-    document.getElementById(id).style.display = "block";
-  }
-
-  window.onload = async () => {
-    const saved = localStorage.getItem("user");
-    if (saved) {
-      const docSnap = await getDoc(doc(db, "users", saved));
-      if (docSnap.exists()) {
-        currentUser = saved;
-        loadUserData(docSnap.data());
-        if (saved === "atiksh") show("adminPanel");
-      }
-    }
-  };
 </script>
+
 </body>
 </html>
